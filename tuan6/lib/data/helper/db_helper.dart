@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuan6/data/model/category.dart';
+import 'package:tuan6/data/model/product.dart';
 
 class DatabaseHelper {
   // Singleton pattern
@@ -20,9 +23,8 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     final databasePath = await getDatabasesPath();
 
-    final path = join(databasePath, 'db_product.db');
-    print(
-        "Đường dẫn database: $databasePath"); // in đường dẫn chứa file database
+    final path = join(databasePath, 'db_pro.db');
+    print("Đường dẫn database: $databasePath"); // in đường dẫn chứa file database
     return await openDatabase(path, onCreate: _onCreate, version: 1
         // ,
         // onConfigure: (db) async => await db.execute('PRAGMA foreign_keys = ON'),
@@ -32,8 +34,11 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(
       'CREATE TABLE category(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, desc TEXT); '
-      'CREATE TABLE product(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT,price INTEGER,img TEXT, desc TEXT, catid INTEGER)',
     );
+    await db.execute(
+      'CREATE TABLE product(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price INTEGER, img TEXT, des TEXT, catid INTEGER);'
+    );
+    
   }
 
 // CRUD dành cho Category
@@ -79,5 +84,55 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+  //
+  //
+  //
+  //
+  //
+  //
+  //
   // Tiếp tục làm CRUD cho Product
+  Future<void> insertProduct (Product_Model product_model) async{
+    final db = await _databaseService.database;
+
+    await db.insert(
+      'product',
+      product_model.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+   Future<List<Product_Model>> products() async {
+    final db = await _databaseService.database;
+    final List<Map<String, dynamic>> maps = await db.query('product');
+    return List.generate(
+        maps.length, (index) => Product_Model.fromMap(maps[index]));
+  }
+
+  Future<Product_Model> product(int id) async {
+    final db = await _databaseService.database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('product', where: 'id = ?', whereArgs: [id]);
+    return Product_Model.fromMap(maps[0]);
+  }
+
+  Future<void> updateProduct(Product_Model pro) async {
+    final db = await _databaseService.database;
+    await db.update(
+      'product',
+      pro.toMap(),
+      where: 'id = ?',
+      whereArgs: [pro.id],
+    );
+  }
+
+  Future<void> deleteProduct(int id) async {
+    final db = await _databaseService.database;
+    await db.delete(
+      'product',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
 }

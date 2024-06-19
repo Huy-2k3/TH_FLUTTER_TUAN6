@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tuan6/page/product/product_add.dart';
+import 'package:tuan6/page/product/product_data.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({super.key});
@@ -10,9 +12,25 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Thực hiện CRUD với bảng Product"),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Product List"),
+      ),
+
+      body: Center(child: ProductBuilder()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (_) => const ProductAdd(),
+                  fullscreenDialog: true,
+                ),
+              )
+              .then((_) => setState(() {}));
+        },
+        tooltip: 'Add New',
+        child: const Icon(Icons.add),
       ),
     );
   }

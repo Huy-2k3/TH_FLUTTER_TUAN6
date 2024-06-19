@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ui';
+
 class Product_Model {
   int? id;
   String? name;
@@ -6,24 +9,39 @@ class Product_Model {
   String? des;
   int? catId;
   //constructor
-  Product_Model(
-      {this.id, this.name, this.price, this.img, this.des, this.catId});
-  Product_Model.fromJson(Map<String, dynamic> json) {
-    id = json["id"];
-    name = json["name"];
-    price = json["price"];
-    img = json["img"];
-    des = json["des"];
-    catId = json["catId"];
+  Product_Model({this.id, this.name, this.price, this.img, this.des, this.catId});
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'des': des,
+      'price': price,
+      'img': img,
+      'catid': catId
+    };
   }
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data["id"] = id;
-    data["name"] = name;
-    data["price"] = price;
-    data["img"] = img;
-    data["des"] = des;
-    data["catId"] = catId;
-    return data;
+
+  factory Product_Model.fromMap(Map<String, dynamic> map) {
+    return Product_Model(
+      id: map['id']?.toInt() ?? 0,
+      name: map['name'] ?? '',
+      des: map['des'] ?? '',
+      price: map['price']?.toInt() ?? 0,
+      img: map['img'] ?? '',
+      catId: map['catid']?.toInt() ?? 0
+    );
   }
+
+
+
+
+  String toJson() => json.encode(toMap());
+  factory Product_Model.fromJson(String source) =>
+      Product_Model.fromMap(json.decode(source));
+
+  // Implement toString to make it easier to see information about
+  // each breed when using the print statement.
+  @override
+  String toString() => 'Product(id: $id, name: $name, desc: $des, price: $price, img: $img, catId: $catId)';
+
 }
